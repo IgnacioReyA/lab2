@@ -9,15 +9,33 @@ export const useFetch = ( url ) => {
     })
 
     const getFetch = async () => {
-        setState({ ...state, isLoading: true, });
-        const resp = await fetch(url);
-        const data = await resp.json();
-        
-        setState({
-            data,
-            isLoading: false,
-            hasError: null,
+        setState({ 
+            data: null,
+            isLoading: true,
+            hasError: null 
         });
+
+        try {
+            const resp = await fetch(url);
+            
+            if (!resp.ok) {
+                throw new Error(`HTTP error! status: ${resp.status}`);
+            }
+            
+            const data = await resp.json();
+            
+            setState({
+                data,
+                isLoading: false,
+                hasError: null,
+            });
+        } catch (error) {
+            setState({
+                data: null,
+                isLoading: false,
+                hasError: error.message,
+            });
+        }
     }
 
     useEffect(() => {
